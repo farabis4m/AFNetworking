@@ -418,14 +418,12 @@ static NSArray * AFPublicKeyTrustChainForServerTrust(SecTrustRef serverTrust) {
                 NSData *spkiData = [trustChainCertificate dataForX509CertificateSubjectPublicKeyInfo];
                 
                 // Create Hash and Encode id in Base64
-                unsigned int outputLength = CC_SHA1_DIGEST_LENGTH;
+                unsigned int outputLength = CC_SHA256_DIGEST_LENGTH;
                 unsigned char output[outputLength];
-                CC_SHA1(spkiData.bytes, (unsigned int) spkiData.length, output);
+                CC_SHA256(spkiData.bytes, (unsigned int) spkiData.length, output);
                 NSData *hash = [NSMutableData dataWithBytes:output length:outputLength];
-                NSString *base64Hash = [NSString stringWithFormat:@"sha1/%@", [hash base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]];
-                
-                NSLog(@"Pin: %@", base64Hash);
-                
+                NSString *base64Hash = [NSString stringWithFormat:@"sha256/%@", [hash base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed]];
+                                
                 for (NSString *pinnedPublicKeyHash in self.pinnedPublicKeyHashes) {
                     if ([base64Hash isEqualToString:pinnedPublicKeyHash]) {
                         trustedPublicKeyHashCount += 1;
