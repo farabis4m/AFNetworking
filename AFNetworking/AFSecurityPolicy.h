@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, AFSSLPinningMode) {
     AFSSLPinningModeNone,
     AFSSLPinningModePublicKey,
     AFSSLPinningModeCertificate,
+    AFSSLPinningModePublicKeyHash,
 };
 
 /**
@@ -51,6 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
  Note that if pinning is enabled, `evaluateServerTrust:forDomain:` will return true if any pinned certificate matches.
  */
 @property (nonatomic, strong, nullable) NSSet <NSData *> *pinnedCertificates;
+
+/**
+ The public key hashes used to evaluate server trust according to the SSL pinning mode.
+ */
+@property (nonatomic, strong) NSArray *pinnedPublicKeyHashes;
 
 /**
  Whether or not to trust servers with an invalid or expired SSL certificates. Defaults to `NO`.
@@ -134,21 +140,28 @@ NS_ASSUME_NONNULL_END
 
 /**
  ## SSL Pinning Modes
-
  The following constants are provided by `AFSSLPinningMode` as possible SSL pinning modes.
-
  enum {
  AFSSLPinningModeNone,
  AFSSLPinningModePublicKey,
  AFSSLPinningModeCertificate,
  }
-
  `AFSSLPinningModeNone`
  Do not used pinned certificates to validate servers.
-
+ 
+ `AFSSLPinningModePublicKeyHash`
+ Validate host certificates against a set of predefined public key hashes.
+ This mode allows to provide backup key(s) in case the primary key gets compromised/lost in case the `ValidatesCertificateChain` property is set to `NO`.
+ The pinned hashes are SHA1 hashes of the public keys in the DER format and should look like this `sha1/T5x9IXmcrQ7YuQxXnxoCmeeQ84c=`.
+ You can retrieve the Subject Public Key Info (SPKI) of a certificate in many ways e.g. run the script at https://gist.github.com/arein/127c2756aa64c4b61c74 (requires Scala) or `openssl x509 -inform DER -pubkey -noout -in certificate.cer | openssl pkey -pubin -outform DER | openssl dgst -sha1 -binary | openssl enc -base64`
+ 
  `AFSSLPinningModePublicKey`
  Validate host certificates against public keys of pinned certificates.
-
+ This mode allows to update the  host certificate without updating the app.
  `AFSSLPinningModeCertificate`
  Validate host certificates against pinned certificates.
+ In this mode you are required to update the app when updating the host certificate.
+ This can lock users out in some cases e.g. you update the app for iOS 8 but there are users on iOS 7.
+ 
+ @warning *Important:* Pinning adds additional maintenance to your project and you risk locking out users. Do not add pinning without the consent of your TLS Administrator.
 */
