@@ -41,7 +41,7 @@ EOS
   end
 
   s.subspec 'Security' do |ss|
-    ss.source_files = 'AFNetworking/AFSecurityPolicy.{h,m}'
+    ss.source_files = 'AFNetworking/AFSecurityPolicy.{h,m}', 'AFNetworking/AFDERDecoder.{h,m}'
     ss.public_header_files = 'AFNetworking/AFSecurityPolicy.h'
     ss.frameworks = 'Security'
   end
