@@ -24,7 +24,6 @@
 #import <AssertMacros.h>
 #import <CommonCrypto/CommonDigest.h>
 #import "AFDERDecoder.h"
-#import "AFDERDecoder.m"
 
 static NSData * AFSecKeyGetData(SecKeyRef key) {
 #if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
